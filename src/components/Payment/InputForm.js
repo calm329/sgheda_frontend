@@ -9,14 +9,17 @@ import "./InputElement.css";
 const InputForm = (props) => {
   const [toggle, setToggle] = useState(false);
   const [toggleCoin, setToggleCoin] = useState(false);
+
   function toggleCoinFunc() {
     if (toggle) {
       setToggle(!toggle);
     }
     setToggleCoin(!toggleCoin);
   }
+
   const [country, setCountry] = useState("");
   const [region, setReigon] = useState("");
+
   const handleConfirm = async () => {
     const name = document.getElementById("billing_fullname").value;
     console.log(name);
@@ -24,8 +27,8 @@ const InputForm = (props) => {
     const machine_number = document.getElementById("machine_number").value;
     const price = props.price;
 
-    const response = await fetch(
-      `${process.env.REACT_APP_SERVER_ADDRESS}/api/pay`,
+    const res = await fetch(
+      `${process.env.REACT_APP_SERVER_ADDRESS}/api/license/invoice`,
       {
         method: "POST",
         headers: {
@@ -42,9 +45,13 @@ const InputForm = (props) => {
       }
     );
 
-    if (response.ok) {
-      console.log("Email sent successfully");
-      // Show success message or perform any other desired action
+    if (res.ok) {
+      const { invoice_url } = await res.json();
+      if (invoice_url) {
+        window.open(invoice_url);
+      } else {
+        console.log("Invalid invoice url");
+      }
     } else {
       console.error("Error sending email");
       // Show error message or perform any other desired action
