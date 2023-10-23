@@ -35,9 +35,21 @@ const Navbar = ({ toggle }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({}),
       }
     );
-    console.log(res.json());
+
+    if (res.ok) {
+      const filename = res.headers.get('X-Suggested-Filename');
+
+      const blob = await res.blob();
+
+      // Create a download link and simulate a click to download the file
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
   };
   const [scrollNav, setScrollNav] = useState(false);
 

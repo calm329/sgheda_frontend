@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import InputElement from "./InputElement";
 import { CoverH1, BasicButton } from "./PaymentElements";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
+import ReCAPTCHA from "react-google-recaptcha";
 import CoinsList from "./CoinsList";
 import "./InputElement.css";
+
 const InputForm = (props) => {
   const [toggle, setToggle] = useState(false);
   const [toggleCoin, setToggleCoin] = useState(false);
@@ -48,6 +50,13 @@ const InputForm = (props) => {
       // Show error message or perform any other desired action
     }
   };
+
+  console.log(process.env.REACT_APP_SITE_KEY);
+
+  const onRecaptchaChange = (value) => {
+    console.log("Captcha value:", value);
+  };
+
   return (
     <div
       style={{
@@ -90,8 +99,11 @@ const InputForm = (props) => {
             className="input-field_info"
           />
         </div>
+        {/* <ReCAPTCHA
+          sitekey={process.env.REACT_APP_SITE_KEY}
+        /> */}
 
-        <CoinsList toggleCoin={toggleCoin} toggleCoinFunc={toggleCoinFunc} />
+        {/* <CoinsList toggleCoin={toggleCoin} toggleCoinFunc={toggleCoinFunc} /> */}
         <div style={{ display: "flex", justifyContent: "center" }}>
           <BasicButton
             style={{ color: "#fefefe", textAlign: "center" }}
