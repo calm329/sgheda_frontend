@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { IconContext } from "react-icons/lib";
 import { animateScroll as scroll } from "react-scroll";
+import { saveAs } from "file-saver";
 import {
   MenuIcon,
   Nav,
@@ -35,9 +36,22 @@ const Navbar = ({ toggle }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({}),
       }
     );
-    console.log(res.json());
+
+    if (res.ok) {
+      const filename = res.headers.get("X-Suggested-Filename");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+      a.click();
+      a.remove(); //afterwards we remove the element again
+    }
   };
   const [scrollNav, setScrollNav] = useState(false);
 

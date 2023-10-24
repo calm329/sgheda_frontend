@@ -2,19 +2,32 @@ import React, { useState } from "react";
 import InputElement from "./InputElement";
 import { CoverH1, BasicButton } from "./PaymentElements";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
+import { toast } from "react-hot-toast";
+import ReCAPTCHA from "react-google-recaptcha";
 import CoinsList from "./CoinsList";
 import "./InputElement.css";
+
+const validateEmail = (email) => {
+  // Regular expression pattern for email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return emailPattern.test(email);
+};
+
 const InputForm = (props) => {
   const [toggle, setToggle] = useState(false);
   const [toggleCoin, setToggleCoin] = useState(false);
+
   function toggleCoinFunc() {
     if (toggle) {
       setToggle(!toggle);
     }
     setToggleCoin(!toggleCoin);
   }
+
   const [country, setCountry] = useState("");
   const [region, setReigon] = useState("");
+
   const handleConfirm = async () => {
     const name = document.getElementById("billing_fullname").value;
     console.log(name);
@@ -22,8 +35,29 @@ const InputForm = (props) => {
     const machine_number = document.getElementById("machine_number").value;
     const price = props.price;
 
-    const response = await fetch(
-      `${process.env.REACT_APP_SERVER_ADDRESS}/api/pay`,
+    if (!name) {
+      toast.error("Please input correct full name!");
+      return;
+    } else if (!email) {
+      console.log("incorrect email");
+      toast.error("Please input correct email!");
+      return;
+    } else if (!validateEmail(email)) {
+      toast.error("Please input validated email!");
+      return;
+    } else if (!machine_number) {
+      toast.error("Please input correct machine number!");
+      return;
+    } else if (!country) {
+      toast.error("Please select correct country!");
+      return;
+    } else if (!region) {
+      toast.error("Please select correct region!");
+      return;
+    }
+
+    const res = await fetch(
+      `${process.env.REACT_APP_SERVER_ADDRESS}/api/license/invoice`,
       {
         method: "POST",
         headers: {
@@ -40,14 +74,25 @@ const InputForm = (props) => {
       }
     );
 
-    if (response.ok) {
-      console.log("Email sent successfully");
-      // Show success message or perform any other desired action
+    if (res.ok) {
+      const { invoice_url } = await res.json();
+      if (invoice_url) {
+        window.open(invoice_url);
+      } else {
+        console.log("Invalid invoice url");
+      }
     } else {
       console.error("Error sending email");
       // Show error message or perform any other desired action
     }
   };
+
+  console.log(process.env.REACT_APP_SITE_KEY);
+
+  const onRecaptchaChange = (value) => {
+    console.log("Captcha value:", value);
+  };
+
   return (
     <div
       style={{
@@ -90,8 +135,11 @@ const InputForm = (props) => {
             className="input-field_info"
           />
         </div>
+        {/* <ReCAPTCHA
+          sitekey={process.env.REACT_APP_SITE_KEY}
+        /> */}
 
-        <CoinsList toggleCoin={toggleCoin} toggleCoinFunc={toggleCoinFunc} />
+        {/* <CoinsList toggleCoin={toggleCoin} toggleCoinFunc={toggleCoinFunc} /> */}
         <div style={{ display: "flex", justifyContent: "center" }}>
           <BasicButton
             style={{ color: "#fefefe", textAlign: "center" }}

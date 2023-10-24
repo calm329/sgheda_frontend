@@ -18,6 +18,7 @@ const WorkSection = () => {
       >
         <VideoBg
           style={{ borderRadius: "20px" }}
+          controls
           autoPlay
           loop
           muted

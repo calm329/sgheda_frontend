@@ -30,15 +30,15 @@ export const ImageBg = styled.img`
 `;
 
 export const CoverContent = styled.div`
-  width: 35%;
+  width: 95%;
   position: absolute;
   top: 30vh;
   left: 0;
   padding: 8px 24px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 `;
 
 export const CoverH1 = styled.h1`
